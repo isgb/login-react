@@ -1,0 +1,13 @@
+https://www.youtube.com/watch?v=q4ywr3eZmk0
+
+crerear carpeta auth-react para almacenar el prpyecto
+
+// ejecutar npm create vite@latest
+Nombre: auth-front
+React
+Typescript
+
+// entrar a la carpeta auth-front
+// y ejecutar npm i && npm run dev
+
+// Ejecutar npm i react-router-dom
