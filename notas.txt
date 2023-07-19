@@ -1,0 +1,403 @@
+https://www.youtube.com/watch?v=q4ywr3eZmk0
+
+crerear carpeta auth-react para almacenar el prpyecto
+
+// ejecutar npm create vite@latest
+Nombre: auth-front
+React
+Typescript
+
+// entrar a la carpeta auth-front
+// y ejecutar npm i && npm run dev
+
+// Ejecutar npm i react-router-dom
+
+// EN APP.JS PONER HOLA MUNDO
+
+// EN main.tsx
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App/>
+  },
+  {
+    path: "/",
+    element: <App/>
+  }
+])
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+// crear carpeta routes en src
+Login.tsx
+
+export default function Login(){
+    return <h1>Login</h1>
+}
+
+Signup.tsx
+
+export default function Signup(){
+    return <h1>signup</h1>
+}
+
+Dashboard.tsx
+
+export default function Dashboard(){
+    return <h1>Dashboard</h1>
+}
+
+/// En main.tsx
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Login from './routes/Login.tsx'
+import Signup from './routes/signup.tsx'
+import Dashboard from './routes/Dashboard.tsx'
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Login/>
+  },
+  {
+    path: "/signup",
+    element: <Signup/>
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard/>
+  },
+])
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>,
+)
+
+/// en carpeta routes
+ProtectedRoutes.tsx
+
+import { useState } from "react"
+import {Outlet, Navigate} from "react-router-dom"
+
+export default function ProtectedRoutes(){
+    const [isAuth, setIsAuth] = useState(false);
+
+    return isAuth ? <Outlet/> : <Navigate to="/" />
+}
+
+/// MAIN.TSX
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Login from './routes/Login.tsx'
+import Signup from './routes/signup.tsx'
+import Dashboard from './routes/Dashboard.tsx'
+import ProtectedRoutes from './routes/ProtectedRoutes.tsx'
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Login/>
+  },
+  {
+    path: "/signup",
+    element: <Signup/>
+  },
+  {
+    path: "/",
+    element: <ProtectedRoutes/>,
+    children:[
+      {
+        path: "/dashboard",
+        element: <Dashboard/>
+      },
+    ],
+  },
+])
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>,
+)
+
+/// crear nueva carpeta auth
+AuthProvider.tsx
+
+import { useContext, createContext, useState, useEffect } from "react";
+
+interface AuthProviderProps{
+    children: React.ReactNode;
+}
+
+const AuthContext = createContext({
+    isAuthenticated : false,
+})
+
+export function AuthProvider({children} :AuthProviderProps){
+
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    return <AuthContext.Provider value={{isAuthenticated}}>
+        {children}
+    </AuthContext.Provider>
+}
+
+/// main.tsx
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </React.StrictMode>,
+)
+
+/// AuthProvider.tsx
+
+import { useContext, createContext, useState, useEffect } from "react";
+
+interface AuthProviderProps{
+    children: React.ReactNode;
+}
+
+const AuthContext = createContext({
+    isAuthenticated : false,
+})
+
+export function AuthProvider({children} :AuthProviderProps){
+
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    return <AuthContext.Provider value={{isAuthenticated}}>
+        {children}
+    </AuthContext.Provider>
+}
+
+export const useAuth = () => useContext(AuthContext);
+
+/// ProtectedRoutes.tsx
+
+import {Outlet, Navigate} from "react-router-dom"
+import { useAuth } from "../auth/AuthProvider"
+
+export default function ProtectedRoutes(){
+    
+    const auth = useAuth();
+    // const [isAuth, setIsAuth] = useState(false);
+
+    return auth.isAuthenticated ? <Outlet/> : <Navigate to="/" />
+}
+
+/// Login.tsx
+
+export default function Login(){
+    return (
+        <form action="">
+            <h1>Login</h1>
+            <label>Username</label>
+            <input type="text" />
+
+            <label>Password</label>
+            <input type="password" />
+
+            <button>Login</button>
+        </form>
+    )
+}
+
+/// crear carpeta layout
+DefaultLayout.tsx
+
+import { Link } from "react-router-dom";
+
+interface DefaultLayoutProps {
+    children: React.ReactNode;
+}
+
+export default function DefaultLayout({children}: DefaultLayoutProps){
+    return(
+       <>
+        <header>
+            <nav>
+                <ul>
+                    <li>
+                        <Link to="/">Home</Link>
+                    </li>
+                    <li>
+                        <Link to="/signup">Signup</Link>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>{children}</main>
+       </>
+    )
+}
+
+/// Login.tsx
+
+import DefaultLayout from "../layout/DefaultLayout";
+
+export default function Login(){
+    return (
+        <DefaultLayout>
+
+            <form action="">
+                <h1>Login</h1>
+                <label>Username</label>
+                <input type="text" />
+
+                <label>Password</label>
+                <input type="password" />
+
+                <button>Login</button>
+            </form>
+
+        </DefaultLayout>
+        
+    )
+}
+
+/// Signup.tsx
+
+import { useState } from "react";
+import DefaultLayout from "../layout/DefaultLayout";
+
+export default function Signup(){
+
+    const [name,setName] =useState("");
+    const [username,setUsername] =useState("");
+    const [password,setPassword] =useState("");
+
+    return (
+        <DefaultLayout>
+
+            <form action="">
+                <h1>Signup</h1>
+                <label>Name</label>
+                <input type="text" value={name} 
+                onChange={(e) => setName(e.target.value)}
+                />
+
+                <label>Username</label>
+                <input type="text" value={username} 
+                onChange={(e) => setUsername(e.target.value)}
+                />
+
+                <label>Password</label>
+                <input type="password" value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <button>Create user</button>
+            </form>
+
+        </DefaultLayout>
+        
+    )
+}
+
+/// Login.tsx
+
+import DefaultLayout from "../layout/DefaultLayout";
+import { useState } from "react";
+
+export default function Login(){
+
+    const [username,setUsername] =useState("");
+    const [password,setPassword] =useState("");
+
+    return (
+        <DefaultLayout>
+
+            <form action="">
+                <h1>Login</h1>
+                
+                <label>Username</label>
+                <input type="text" value={username} 
+                onChange={(e) => setUsername(e.target.value)}
+                />
+
+                <label>Password</label>
+                <input type="password" value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <button>Login</button>
+            </form>
+
+        </DefaultLayout>
+        
+    )
+}
+
+/// Autenticar el usuairo
+signup.tsx
+
+import { useState } from "react";
+import DefaultLayout from "../layout/DefaultLayout";
+import { useAuth } from "../auth/AuthProvider";
+import { Navigate } from "react-router-dom";
+
+export default function Signup(){
+
+    const [name,setName] =useState("");
+    const [username,setUsername] =useState("");
+    const [password,setPassword] =useState("");
+
+    const auth = useAuth();
+
+    if(auth.isAuthenticated){
+        return <Navigate to="/dashboard"/>
+    }
+
+    return (
+        <DefaultLayout>
+
+            <form action="">
+                <h1>Signup</h1>
+                <label>Name</label>
+                <input type="text" value={name} 
+                onChange={(e) => setName(e.target.value)}
+                />
+
+                <label>Username</label>
+                <input type="text" value={username} 
+                onChange={(e) => setUsername(e.target.value)}
+                />
+
+                <label>Password</label>
+                <input type="password" value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <button>Create user</button>
+            </form>
+
+        </DefaultLayout>
+        
+    )
+}
+// 27:58
